@@ -1,0 +1,17 @@
+[redis]
+host = "10.0.0.223:6379"
+topic = "lighthouse"
+
+[boards]
+  [boards.alpha]
+  serial = "/dev/ttyUSB0"
+    [boards.alpha.dev]
+      [boards.alpha.dev.led]
+      mode = "pwm"
+      inverted = false
+      pins = ["9"]
+
+      [boards.alpha.dev.internal]
+      mode = "direct"
+      inverted = false
+      pins = ["13"]
