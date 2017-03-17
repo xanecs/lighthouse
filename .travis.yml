@@ -21,3 +21,4 @@ deploy:
   file: dist/lighthouse-$BLD_GOOS-$BLD_NAME
   on:
     repo: xanecs/lighthouse
+    tags: true
