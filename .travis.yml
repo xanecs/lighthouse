@@ -1,0 +1,22 @@
+language: go
+env:
+  matrix:
+  - BLD_GOOS=linux BLD_GOARCH=amd64 BLD_NAME=amd64
+  - BLD_GOOS=linux BLD_GOARCH=arm BLD_GOARM=6 BLD_NAME=armv6
+  - BLD_GOOS=linux BLD_GOARCH=arm BLD_GOARM=7 BLD_NAME=armv7
+  - BLD_GOOS=linux BLD_GOARCH=arm64 BLD_NAME=aarch64
+  - BLD_GOOS=freebsd BLD_GOARCH=amd64 BLD_NAME=amd64
+  - BLD_GOOS=freebsd BLD_GOARCH=arm BLD_GOARM=6 BLD_NAME=armv6
+  - BLD_GOOS=freebsd BLD_GOARCH=arm BLD_GOARM=7 BLD_NAME=armv7
+script:
+- go test -v ./...
+- mkdir dist
+- GOOS=$BLD_GOOS GOARCH=$BLD_GOARCH GOARM=$BLD_GOARM go build -v -o dist/lighthouse-$BLD_GOOS-$BLD_NAME
+  ./...
+deploy:
+  provider: releases
+  api_key:
+    secure: lfwkINcxgscfG43WfoWhMzbnYYEAdUbacHfByYiaoMA5eAJMG2/7Ne1TCfP2wPXhCYNOzBUfF6HbgRLlPBG8m6t5hhhXqsAxDfHLuRn5cFmNXoI+2dj44tNrQrDjrOI3o37yM677DymN3OdQMYRlnSW5LZvYU2BXw13CAabaebIZzqaMBOWs9n3s6uDCBjpUYt94Zn4BrVWMrl0Oq8fGLiF4j9F91PWNIjnNF4tj5slLfpITfrqkg9IhU57c+xGL2S1lUoxxtO3YSjVo7WK8P1xvWkcaTyuA1ElRIuRpW7AiI4erQvFKO0UUgrXGfZZSfsFsXSdzXXz2+nl7UafNq72SO410gD9qY1Rh0Yv/dlEv52kPNuWZBJNKbI3P00/kLnT9HOEDASMWUf6VswrMeKyeevjvZ1nwtG6cRe1N1DsSMOjun29SZCqesfG8Pq4qUgTrZJf/1IW66XORCZ13ct70ecPAQztPqia3jXI38l9uW95+WdYg2PcsBDVBE4gdoXx/DJxw3o6Zj65TcXuBlXUagGD6bhj+oQZTu9MTb8m1NQBhDyxnjdYlcrpSwhoIXifDjLOI/NwcJfYGFXW8WyJ6SOvkkbnmySemgPlyh2Kn+Fz+3L3KwUMOITrk/wnrU3AiY6HcYyS/5p3pNbLVg2l0sX9qK9tuhMXfzQ+dNo8=
+  file: dist/lighthouse-$BLD_GOOS-$BLD_NAME
+  on:
+    repo: xanecs/lighthouse
