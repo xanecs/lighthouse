@@ -88,15 +88,15 @@ func parseColor(params map[string]interface{}) (color, error) {
 		return color{}, errors.New("Missing color parameters")
 	}
 
-	red, okR := valR.(byte)
-	green, okG := valG.(byte)
-	blue, okB := valB.(byte)
+	red, okR := valR.(float64)
+	green, okG := valG.(float64)
+	blue, okB := valB.(float64)
 
 	if !(okR && okG && okB) {
 		return color{}, errors.New("Invalid color parameters")
 	}
 
-	return color{red, green, blue}, nil
+	return color{uint8(red), uint8(green), uint8(blue)}, nil
 }
 
 func newRgbDriver(cfg config.DeviceConfig, connection gpio.DigitalWriter) (*rgbDriver, error) {

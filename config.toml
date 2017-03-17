@@ -6,10 +6,10 @@ topic = "lighthouse"
   [boards.alpha]
   serial = "/dev/ttyUSB0"
     [boards.alpha.dev]
-      [boards.alpha.dev.led]
-      mode = "pwm"
+      [boards.alpha.dev.rgb]
+      mode = "rgb"
       inverted = false
-      pins = ["9"]
+      pins = ["9", "10", "11"]
 
       [boards.alpha.dev.internal]
       mode = "direct"
