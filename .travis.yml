@@ -5,9 +5,6 @@ env:
   - BLD_GOOS=linux BLD_GOARCH=arm BLD_GOARM=6 BLD_NAME=armv6
   - BLD_GOOS=linux BLD_GOARCH=arm BLD_GOARM=7 BLD_NAME=armv7
   - BLD_GOOS=linux BLD_GOARCH=arm64 BLD_NAME=aarch64
-  - BLD_GOOS=freebsd BLD_GOARCH=amd64 BLD_NAME=amd64
-  - BLD_GOOS=freebsd BLD_GOARCH=arm BLD_GOARM=6 BLD_NAME=armv6
-  - BLD_GOOS=freebsd BLD_GOARCH=arm BLD_GOARM=7 BLD_NAME=armv7
 script:
 - go test -v ./...
 - mkdir dist
