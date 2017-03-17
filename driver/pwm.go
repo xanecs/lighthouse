@@ -18,6 +18,9 @@ type pwmDriver struct {
 
 func (p *pwmDriver) write() error {
 	if !p.power {
+		if p.inverted {
+			return p.driver.PwmWrite(255)
+		}
 		return p.driver.Off()
 	}
 	brightness := p.brightness
@@ -29,10 +32,10 @@ func (p *pwmDriver) write() error {
 
 func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) error {
 	switch action {
-	case "on":
+	case cmdOn:
 		p.power = true
 
-	case "off":
+	case cmdOff:
 		p.power = false
 
 	case "brightness":
@@ -46,7 +49,7 @@ func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) 
 		}
 		p.brightness = uint8(255 * brightness)
 
-	case "write":
+	case cmdWrite:
 		val := params["power"]
 		if val == nil {
 			return errors.New("Missing parameter 'power'")

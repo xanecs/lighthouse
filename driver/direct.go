@@ -30,13 +30,13 @@ func (d *directDriver) write() error {
 
 func (d *directDriver) HandleMessage(action string, params map[string]interface{}) error {
 	switch action {
-	case "on":
+	case cmdOn:
 		d.state = true
 
-	case "off":
+	case cmdOff:
 		d.state = false
 
-	case "write":
+	case cmdWrite:
 		val := params["power"]
 		if val == nil {
 			return errors.New("Missing parameter 'power'")

@@ -5,6 +5,13 @@ import (
 
 	"github.com/xanecs/lighthouse/config"
 	"gobot.io/x/gobot"
+	"gobot.io/x/gobot/drivers/gpio"
+)
+
+const (
+	cmdOn    = "on"
+	cmdOff   = "off"
+	cmdWrite = "write"
 )
 
 // Device represents a device that can handle messages
@@ -22,6 +29,13 @@ func NewDriver(cfg config.DeviceConfig, connection gobot.Connection) (Device, er
 
 	case "pwm":
 		return newPwmDriver(cfg, connection)
+
+	case "rgb":
+		dd, ok := connection.(gpio.DigitalWriter)
+		if !ok {
+			return nil, errors.New("rgb mode is not supported on this board")
+		}
+		return newRgbDriver(cfg, dd)
 
 	default:
 		return nil, errors.New("Invalid mode")
