@@ -11,8 +11,9 @@ env:
 script:
 - go test -v ./...
 - mkdir dist
-- GOOS=$BLD_GOOS GOARCH=$BLD_GOARCH GOARM=$BLD_GOARM go build -v -o dist/lighthouse-$BLD_GOOS-$BLD_NAME
-  ./...
+- GOOS=$BLD_GOOS GOARCH=$BLD_GOARCH GOARM=$BLD_GOARM go build
+- mv ./lighthouse dist/lighthouse-$BLD_GOOS-$BLD_NAME
+
 deploy:
   provider: releases
   api_key:
