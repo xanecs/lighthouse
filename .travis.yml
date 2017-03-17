@@ -12,7 +12,7 @@ script:
 - go test -v ./...
 - mkdir dist
 - GOOS=$BLD_GOOS GOARCH=$BLD_GOARCH GOARM=$BLD_GOARM go build
-- mv ./lighthouse "dist/lighthouse-$BLD_GOOS-$BLD_NAME"
+- mv ./lighthouse "./dist/lighthouse-${BLD_GOOS}-${BLD_NAME}"
 
 deploy:
   provider: releases
