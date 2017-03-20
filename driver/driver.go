@@ -41,6 +41,9 @@ func NewDriver(cfg config.DeviceConfig, connection gobot.Connection) (Device, er
 		}
 		return newRgbDriver(cfg, dd)
 
+	case "servo":
+		return newServoDriver(cfg, connection)
+
 	default:
 		return nil, errors.New("Invalid mode")
 	}
