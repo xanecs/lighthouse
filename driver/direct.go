@@ -10,7 +10,7 @@ import (
 )
 
 type directDriver struct {
-	driver   *gpio.DirectPinDriver
+	drivers  []*gpio.DirectPinDriver
 	inverted bool
 	state    bool
 }
@@ -24,8 +24,13 @@ func boolToByte(v bool) byte {
 
 func (d *directDriver) write() error {
 	// != means xor here
-	err := d.driver.DigitalWrite(boolToByte(d.state != d.inverted))
-	return err
+	for _, driver := range d.drivers {
+		err := driver.DigitalWrite(boolToByte(d.state != d.inverted))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (d *directDriver) HandleMessage(action string, params map[string]interface{}) error {
@@ -59,16 +64,16 @@ func (d *directDriver) Status() map[string]interface{} {
 	return map[string]interface{}{"power": d.state}
 }
 
-func (d *directDriver) Driver() gobot.Device {
-	return d.driver
-}
-
 func newDirectDriver(cfg config.DeviceConfig, connection gobot.Connection) (*directDriver, error) {
-	if len(cfg.Pins) != 1 {
+	if len(cfg.Pins) < 1 {
 		return nil, errors.New("Invalid number of pins")
 	}
+	drivers := make([]*gpio.DirectPinDriver, len(cfg.Pins))
+	for i, pin := range cfg.Pins {
+		drivers[i] = gpio.NewDirectPinDriver(connection, pin)
+	}
 	return &directDriver{
-		driver:   gpio.NewDirectPinDriver(connection, cfg.Pins[0]),
+		drivers:  drivers,
 		inverted: cfg.Inverted,
 		state:    false,
 	}, nil

@@ -18,7 +18,6 @@ type Hardware struct {
 // NewHardware creates a new Hardware object from a board config
 func NewHardware(cfg map[string]config.BoardConfig) (*Hardware, error) {
 	connections := make([]gobot.Connection, 0)
-	drivers := make([]gobot.Device, 0)
 	devices := make(map[string]driver.Device)
 
 	for _, boardConfig := range cfg {
@@ -34,7 +33,6 @@ func NewHardware(cfg map[string]config.BoardConfig) (*Hardware, error) {
 				return nil, err
 			}
 			devices[deviceName] = device
-			drivers = append(drivers, device.Driver())
 		}
 	}
 

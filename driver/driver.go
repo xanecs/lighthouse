@@ -22,7 +22,6 @@ const (
 type Device interface {
 	HandleMessage(string, map[string]interface{}) error
 	Status() map[string]interface{}
-	Driver() gobot.Device
 }
 
 // NewDriver creates a new Driver from a device config

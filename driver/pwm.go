@@ -10,24 +10,33 @@ import (
 )
 
 type pwmDriver struct {
-	driver     *gpio.DirectPinDriver
+	drivers    []*gpio.DirectPinDriver
 	inverted   bool
 	power      bool
 	brightness byte
 }
 
 func (p *pwmDriver) write() error {
-	if !p.power {
-		if p.inverted {
-			return p.driver.PwmWrite(255)
+	for _, driver := range p.drivers {
+		var err error
+		if !p.power {
+			if p.inverted {
+				err = driver.PwmWrite(255)
+			} else {
+				err = driver.Off()
+			}
+		} else {
+			brightness := p.brightness
+			if p.inverted {
+				brightness = 255 - brightness
+			}
+			err = driver.PwmWrite(brightness)
 		}
-		return p.driver.Off()
+		if err != nil {
+			return err
+		}
 	}
-	brightness := p.brightness
-	if p.inverted {
-		brightness = 255 - brightness
-	}
-	return p.driver.PwmWrite(brightness)
+	return nil
 }
 
 func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) error {
@@ -90,16 +99,16 @@ func (p *pwmDriver) Status() map[string]interface{} {
 	return map[string]interface{}{"power": p.power, "brightness": p.brightness / 255.0}
 }
 
-func (p *pwmDriver) Driver() gobot.Device {
-	return p.driver
-}
-
 func newPwmDriver(cfg config.DeviceConfig, connection gobot.Connection) (*pwmDriver, error) {
-	if len(cfg.Pins) != 1 {
+	if len(cfg.Pins) < 1 {
 		return nil, errors.New("Invalid number of pins")
 	}
+	drivers := make([]*gpio.DirectPinDriver, len(cfg.Pins))
+	for i, pin := range cfg.Pins {
+		drivers[i] = gpio.NewDirectPinDriver(connection, pin)
+	}
 	return &pwmDriver{
-		driver:     gpio.NewDirectPinDriver(connection, cfg.Pins[0]),
+		drivers:    drivers,
 		inverted:   cfg.Inverted,
 		power:      false,
 		brightness: 255,
