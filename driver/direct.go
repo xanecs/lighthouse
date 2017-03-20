@@ -33,7 +33,7 @@ func (d *directDriver) write() error {
 	return nil
 }
 
-func (d *directDriver) HandleMessage(action string, params map[string]interface{}) error {
+func (d *directDriver) HandleMessage(action string, p params) error {
 	switch action {
 	case cmdOn:
 		d.state = true
@@ -42,16 +42,10 @@ func (d *directDriver) HandleMessage(action string, params map[string]interface{
 		d.state = false
 
 	case cmdWrite:
-		val := params["power"]
-		if val == nil {
-			return errors.New("Missing parameter 'power'")
+		power, err := p.getBool("power")
+		if err != nil {
+			return err
 		}
-
-		power, ok := val.(bool)
-		if !ok {
-			return errors.New("Invalid parameter 'power'")
-		}
-
 		d.state = power
 
 	default:

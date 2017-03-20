@@ -35,7 +35,7 @@ func (r *rgbDriver) write() error {
 	return r.driver.SetRGB(r.color.red, r.color.green, r.color.blue)
 }
 
-func (r *rgbDriver) HandleMessage(action string, params map[string]interface{}) error {
+func (r *rgbDriver) HandleMessage(action string, p params) error {
 	switch action {
 	case cmdOn:
 		r.power = true
@@ -43,35 +43,27 @@ func (r *rgbDriver) HandleMessage(action string, params map[string]interface{}) 
 	case cmdOff:
 		r.power = false
 
-	case "power":
-		val := params["power"]
-		if val == nil {
-			return errors.New("Missing parameter 'power'")
-		}
-		power, ok := val.(bool)
-		if !ok {
-			return errors.New("Invalid parameter 'power'")
+	case cmdPower:
+		power, err := p.getBool("power")
+		if err != nil {
+			return err
 		}
 		r.power = power
 
 	case "color":
-		newColor, err := parseColor(params)
+		newColor, err := parseColor(p)
 		if err != nil {
 			return err
 		}
 		r.color = newColor
 
 	case cmdWrite:
-		val := params["power"]
-		if val == nil {
-			return errors.New("Missing parameter 'power'")
-		}
-		power, ok := val.(bool)
-		if !ok {
-			return errors.New("Invalid parameter 'power'")
+		power, err := p.getBool("power")
+		if err != nil {
+			return err
 		}
 
-		newColor, err := parseColor(params)
+		newColor, err := parseColor(p)
 		if err != nil {
 			return err
 		}

@@ -39,7 +39,7 @@ func (p *pwmDriver) write() error {
 	return nil
 }
 
-func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) error {
+func (p *pwmDriver) HandleMessage(action string, par params) error {
 	switch action {
 	case cmdOn:
 		p.power = true
@@ -48,43 +48,27 @@ func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) 
 		p.power = false
 
 	case "brightness":
-		val := params["brightness"]
-		if val == nil {
-			return errors.New("Missing parameter 'brightness'")
-		}
-		brightness, ok := val.(float64)
-		if !ok {
-			return errors.New("Invalid parameter 'brightness'")
+		brightness, err := par.getFloat("brightness")
+		if err != nil {
+			return err
 		}
 		p.brightness = uint8(255 * brightness)
 
-	case "power":
-		val := params["power"]
-		if val == nil {
-			return errors.New("Missing parameter 'power'")
-		}
-		power, ok := val.(bool)
-		if !ok {
-			return errors.New("Invalid parameter 'power'")
+	case cmdPower:
+		power, err := par.getBool("power")
+		if err != nil {
+			return err
 		}
 		p.power = power
 
 	case cmdWrite:
-		val := params["power"]
-		if val == nil {
-			return errors.New("Missing parameter 'power'")
+		power, err := par.getBool("power")
+		if err != nil {
+			return err
 		}
-		power, ok := val.(bool)
-		if !ok {
-			return errors.New("Invalid parameter 'power'")
-		}
-		val = params["brightness"]
-		if val == nil {
-			return errors.New("Missing parameter 'brightness'")
-		}
-		brightness, ok := val.(float64)
-		if !ok {
-			return errors.New("Invalid parameter 'brightness'")
+		brightness, err := par.getFloat("brightness")
+		if err != nil {
+			return err
 		}
 		p.power = power
 		p.brightness = uint8(brightness * 255)

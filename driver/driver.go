@@ -12,6 +12,7 @@ const (
 	cmdOn    = "on"
 	cmdOff   = "off"
 	cmdWrite = "write"
+	cmdPower = "power"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 
 // Device represents a device that can handle messages
 type Device interface {
-	HandleMessage(string, map[string]interface{}) error
+	HandleMessage(string, params) error
 	Status() map[string]interface{}
 }
 
