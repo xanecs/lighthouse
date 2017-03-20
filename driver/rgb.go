@@ -43,6 +43,17 @@ func (r *rgbDriver) HandleMessage(action string, params map[string]interface{}) 
 	case cmdOff:
 		r.power = false
 
+	case "power":
+		val := params["power"]
+		if val == nil {
+			return errors.New("Missing parameter 'power'")
+		}
+		power, ok := val.(bool)
+		if !ok {
+			return errors.New("Invalid parameter 'power'")
+		}
+		r.power = power
+
 	case "color":
 		newColor, err := parseColor(params)
 		if err != nil {

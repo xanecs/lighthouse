@@ -49,6 +49,17 @@ func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) 
 		}
 		p.brightness = uint8(255 * brightness)
 
+	case "power":
+		val := params["power"]
+		if val == nil {
+			return errors.New("Missing parameter 'power'")
+		}
+		power, ok := val.(bool)
+		if !ok {
+			return errors.New("Invalid parameter 'power'")
+		}
+		p.power = power
+
 	case cmdWrite:
 		val := params["power"]
 		if val == nil {

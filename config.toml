@@ -15,3 +15,8 @@ topic = "lighthouse"
       mode = "direct"
       inverted = false
       pins = ["13"]
+
+      [boards.alpha.dev.dodec]
+      mode = "pwm"
+      inverted = false
+      pins = ["3"]
