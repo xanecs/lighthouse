@@ -14,6 +14,10 @@ const (
 	cmdWrite = "write"
 )
 
+const (
+	errInvalidCmd = "Invalid command"
+)
+
 // Device represents a device that can handle messages
 type Device interface {
 	HandleMessage(string, map[string]interface{}) error

@@ -78,6 +78,9 @@ func (r *rgbDriver) HandleMessage(action string, params map[string]interface{}) 
 
 		r.power = power
 		r.color = newColor
+
+	default:
+		return errors.New(errInvalidCmd + " " + action)
 	}
 	return r.write()
 }

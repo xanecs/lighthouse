@@ -79,6 +79,9 @@ func (p *pwmDriver) HandleMessage(action string, params map[string]interface{}) 
 		}
 		p.power = power
 		p.brightness = uint8(brightness * 255)
+
+	default:
+		return errors.New(errInvalidCmd + " " + action)
 	}
 	return p.write()
 }

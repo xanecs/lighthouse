@@ -50,7 +50,7 @@ func (d *directDriver) HandleMessage(action string, params map[string]interface{
 		d.state = power
 
 	default:
-		return errors.New("Invalid command")
+		return errors.New(errInvalidCmd + " " + action)
 	}
 	return d.write()
 }
