@@ -2,6 +2,8 @@ package driver
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 
 	"github.com/xanecs/lighthouse/config"
 
@@ -79,8 +81,26 @@ func (p *pwmDriver) HandleMessage(action string, par params) error {
 	return p.write()
 }
 
-func (p *pwmDriver) Status() map[string]interface{} {
-	return map[string]interface{}{"power": p.power, "brightness": p.brightness / 255.0}
+func (p *pwmDriver) Status() map[string]string {
+	return map[string]string{"power": fmt.Sprint(p.power), "brightness": fmt.Sprint(float64(p.brightness) / 255.0)}
+}
+
+func (p *pwmDriver) Restore(status map[string]string) error {
+	pwr, ok := status["power"]
+	if !ok {
+		return errors.New("Missing parameter 'power'")
+	}
+	p.power = pwr == trueStr
+	brightStr, ok := status["brightness"]
+	if !ok {
+		return errors.New("Missing parameter 'brightness'")
+	}
+	bright, err := strconv.ParseFloat(brightStr, 64)
+	if err != nil {
+		return err
+	}
+	p.brightness = byte(bright * 255)
+	return p.write()
 }
 
 func newPwmDriver(cfg config.DeviceConfig, connection gobot.Connection) (*pwmDriver, error) {

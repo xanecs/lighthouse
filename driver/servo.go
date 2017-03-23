@@ -2,6 +2,8 @@ package driver
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 
 	"github.com/xanecs/lighthouse/config"
 	"gobot.io/x/gobot"
@@ -72,8 +74,27 @@ func (s *servoDriver) HandleMessage(action string, p params) error {
 	return s.write()
 }
 
-func (s *servoDriver) Status() map[string]interface{} {
-	return map[string]interface{}{"power": s.power, "angle": s.angle}
+func (s *servoDriver) Status() map[string]string {
+	return map[string]string{"power": fmt.Sprint(s.power), "angle": fmt.Sprint(s.angle)}
+}
+
+func (s *servoDriver) Restore(status map[string]string) error {
+	powerStr, ok := status["power"]
+	if !ok {
+		return errors.New("Missing parameter 'power'")
+	}
+	s.power = powerStr == trueStr
+
+	angleStr, ok := status["angle"]
+	if !ok {
+		return errors.New("Missing parameter 'angle'")
+	}
+	angle, err := strconv.ParseUint(angleStr, 10, 8)
+	if err != nil {
+		return err
+	}
+	s.angle = uint8(angle)
+	return s.write()
 }
 
 func newServoDriver(cfg config.DeviceConfig, connection gobot.Connection) (*servoDriver, error) {

@@ -2,6 +2,7 @@ package driver
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/xanecs/lighthouse/config"
 
@@ -54,8 +55,17 @@ func (d *directDriver) HandleMessage(action string, p params) error {
 	return d.write()
 }
 
-func (d *directDriver) Status() map[string]interface{} {
-	return map[string]interface{}{"power": d.state}
+func (d *directDriver) Status() map[string]string {
+	return map[string]string{"power": fmt.Sprint(d.state)}
+}
+
+func (d *directDriver) Restore(status map[string]string) error {
+	v, ok := status["power"]
+	if !ok {
+		return errors.New("Missing parameter power")
+	}
+	d.state = v == trueStr
+	return d.write()
 }
 
 func newDirectDriver(cfg config.DeviceConfig, connection gobot.Connection) (*directDriver, error) {

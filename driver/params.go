@@ -2,6 +2,10 @@ package driver
 
 import "errors"
 
+const (
+	trueStr = "true"
+)
+
 type params map[string]interface{}
 
 func (p params) getBool(key string) (bool, error) {

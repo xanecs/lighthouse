@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/xanecs/lighthouse/config"
 	"github.com/xanecs/lighthouse/driver"
@@ -57,8 +59,20 @@ func (h *Hardware) Stop() {
 	}
 }
 
+// Restore all Hardware from database
+func (h *Hardware) Restore(b *broker) {
+	for name, dev := range h.devices {
+		status, err := b.fetchStatus(name)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
+		dev.Restore(status)
+	}
+}
+
 // Listen processes Messages from a channel
-func (h *Hardware) Listen(in chan Message, chanErr chan error) {
+func (h *Hardware) Listen(in chan Message, out chan Status, chanErr chan error) {
 	for {
 		msg := <-in
 		dev := h.devices[msg.Device]
@@ -68,6 +82,8 @@ func (h *Hardware) Listen(in chan Message, chanErr chan error) {
 		}
 		if err := dev.HandleMessage(msg.Action, msg.Params); err != nil {
 			chanErr <- err
+			continue
 		}
+		out <- Status{msg.Device, dev.Status()}
 	}
 }

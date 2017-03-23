@@ -8,6 +8,7 @@ import (
 type broker struct {
 	client *redis.Client
 	pubsub *redis.PubSub
+	topic  string
 }
 
 func newBroker(cfg config.RedisConfig) (*broker, error) {
@@ -23,6 +24,7 @@ func newBroker(cfg config.RedisConfig) (*broker, error) {
 	return &broker{
 		client: client,
 		pubsub: pubsub,
+		topic:  cfg.Topic,
 	}, nil
 }
 
@@ -35,6 +37,21 @@ func (b *broker) listen(messages chan string, errors chan error) {
 		}
 		messages <- msg.Payload
 	}
+}
+
+func (b *broker) updateStatus(status chan Status, errors chan error) {
+	for {
+		s := <-status
+		err := b.client.HMSet(b.topic+":"+s.Device, s.Params).Err()
+		if err != nil {
+			errors <- err
+		}
+
+	}
+}
+
+func (b *broker) fetchStatus(device string) (map[string]string, error) {
+	return b.client.HGetAll(b.topic + ":" + device).Result()
 }
 
 func (b *broker) Close() {

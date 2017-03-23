@@ -29,13 +29,17 @@ func main() {
 	}
 	defer broker.Close()
 
+	hardware.Restore(broker)
+
 	chanErr := make(chan error)
 	brokerMsg := make(chan string)
 	parsedMsg := make(chan Message)
+	status := make(chan Status)
 
 	go broker.listen(brokerMsg, chanErr)
 	go Parser(brokerMsg, parsedMsg, chanErr)
-	go hardware.Listen(parsedMsg, chanErr)
+	go hardware.Listen(parsedMsg, status, chanErr)
+	go broker.updateStatus(status, chanErr)
 
 	for {
 		err := <-chanErr

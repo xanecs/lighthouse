@@ -22,3 +22,9 @@ func Parser(in chan string, out chan Message, errOut chan error) {
 		out <- msg
 	}
 }
+
+// Status represents the state of a device
+type Status struct {
+	Device string
+	Params map[string]string
+}

@@ -2,6 +2,7 @@ package driver
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/xanecs/lighthouse/config"
 
@@ -77,8 +78,31 @@ func (r *rgbDriver) HandleMessage(action string, p params) error {
 	return r.write()
 }
 
-func (r *rgbDriver) Status() map[string]interface{} {
-	return map[string]interface{}{"power": r.power, "color": r.color}
+func (r *rgbDriver) Status() map[string]string {
+	return map[string]string{
+		"power": fmt.Sprint(r.power),
+		"red":   fmt.Sprint(r.color.red),
+		"green": fmt.Sprint(r.color.green),
+		"blue":  fmt.Sprint(r.color.blue),
+	}
+}
+
+func (r *rgbDriver) Restore(status map[string]string) error {
+	par := make(params)
+	for k, v := range status {
+		par[k] = v
+	}
+	clr, err := parseColor(par)
+	if err != nil {
+		return err
+	}
+	r.color = clr
+	powerStr, ok := status["power"]
+	if !ok {
+		return errors.New("Missing parameter 'power'")
+	}
+	r.power = powerStr == trueStr
+	return r.write()
 }
 
 func (r *rgbDriver) Driver() gobot.Device {

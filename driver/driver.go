@@ -22,7 +22,8 @@ const (
 // Device represents a device that can handle messages
 type Device interface {
 	HandleMessage(string, params) error
-	Status() map[string]interface{}
+	Status() map[string]string
+	Restore(map[string]string) error
 }
 
 // NewDriver creates a new Driver from a device config
